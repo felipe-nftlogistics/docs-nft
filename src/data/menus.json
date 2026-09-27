@@ -1,0 +1,253 @@
+{
+  "menuCategoriaList": [
+    {
+      "titulo": "Inicio",
+      "link": "/dashboard",
+      "thumb": "/assets/img/categories/comex.webp",
+      "descricao": "Vamos nos apresentar primeiros?<br> Somos a <span class=\"detalhe-palavra\">NFT Logistics</span> empresa especialista e referencia em importação e exportação de mercadorias para feiras e eventos comerciais no Brasil e no mundo. Saiba mais nos links abaixo."
+    },
+    {
+      "titulo": "Comercio Exterior",
+      "link": "/dashboard/comex",
+      "thumb": "/assets/img/categories/comex.webp",
+      "descricao": "Essa seção é reservada para você entender termos importantes do Comércio Exterior que usamos diáriamente desde o <span class=\"detalhe-palavra\">processo de envio e recebimento de mercadorias até o desembaraço aduaneiro</span>."
+    },
+    {
+      "titulo": "Controles de Processos",
+      "link": "/dashboard/controles",
+      "thumb": "/assets/img/categories/controles.webp",
+      "descricao": "Na NFT Logistics possuímos procedimentos que devem ser seguidos para o bom andamento da empresa, aqui você vai entender como funciona a nossa <span class=\"detalhe-palavra\">planilha de controle de processos</span> onde gerenciamos os dados importantes de cada embarque, fazemos a gestão de armazenagem, controlamos os bancos de dados e notas fiscais."
+    },
+    {
+      "titulo": "Nota Fiscal",
+      "link": "/dashboard/nota-fiscal",
+      "thumb": "/assets/img/categories/nota-fiscal.webp",
+      "descricao": "Entenda o processo de gerar uma <span class=\"detalhe-palavra\">nota fiscal </span> de forma autônoma com processo simplificado."
+    },
+    {
+      "titulo": "Procedimentos Internos",
+      "link": "/dashboard/procedimentos",
+      "thumb": "/assets/img/categories/procedimentos.webp",
+      "descricao": "Entenda como funcionam os <span class=\"detalhe-palavra\">procedimentos internos da NFT Logistics </span> e tenha acesso a informações de como abertura de referências internas e do despachante, coletas, desbloqueios de BL, planilhas de tradução e muito mais."
+    },
+    {
+      "titulo": "Produtividade",
+      "link": "/dashboard/produtividade",
+      "thumb": "/assets/img/categories/produtividade.webp",
+      "descricao": "Aqui você vai aprender a <span class=\"detalhe-palavra\">manipular e controlar</span> melhor a sua área de trabalho e ferramentas do computador."
+    },
+    {
+      "titulo": "Tabelas",
+      "link": "/dashboard/tabelas",
+      "thumb": "/assets/img/categories/tabelas.webp",
+      "descricao": "Tenha acesso a <span class=\"detalhe-palavra\">listas e tabelas</span> importantes para o bom andamento do seu dia a dia na NFT Logistics"
+    }
+  ],
+  "comexList": [
+    {
+      "titulo": "CCT - Antigo Mantra",
+      "link": "/dashboard/comex/cct",
+      "thumb": "/assets/img/categories/comex.webp",
+      "descricao": "Conheça o <span class=\"detalhe-palavra\">Conhecimento de embarque aéreo</span> (antigo Mantra), utilizado para saber o que foi registrado na carga no sistema da Receita Federal."
+    },
+    {
+      "titulo": "Desbloqueio de BL",
+      "link": "/dashboard/comex/desbloqueio-bl",
+      "thumb": "/assets/img/categories/comex.webp",
+      "descricao": "Como fazer o <span class=\"detalhe-palavra\">desbloqueio do conhecimento maritimo</span> para conseguir fazer remoção e registro de DI."
+    },
+    {
+      "titulo": "DTA - Remoção",
+      "link": "/dashboard/comex/dta-remocao",
+      "thumb": "/assets/img/categories/comex.webp",
+      "descricao": "Declaração de transito Aduaneiro, entenda como funciona o procedimento de <span class=\"detalhe-palavra\">remoção da Zona Primaria</span> para a Secundária"
+    },
+    {
+      "titulo": "Importação",
+      "link": "/dashboard/comex/importacao",
+      "thumb": "/assets/img/categories/comex.webp",
+      "descricao": "Como funciona a <span class=\"detalhe-palavra\">chegada de carga</span> no Brasil e caracteristicas dessa modalidade do comercio exterior"
+    },
+    {
+      "titulo": "Exportação",
+      "link": "/dashboard/comex/exportacao",
+      "thumb": "/assets/img/categories/comex.webp",
+      "descricao": "Como funciona a <span class=\"detalhe-palavra\">saída de carga</span> no Brasil e caracteristicas dessa modalidade do comercio exterior"
+    },
+    {
+      "titulo": "Reexportação",
+      "link": "/dashboard/comex/reexportacao",
+      "thumb": "/assets/img/categories/comex.webp",
+      "descricao": "Como funciona a <span class=\"detalhe-palavra\">saída de carga em admissão temporária</span> no Brasil e caracteristicas dessa modalidade do comercio exterior"
+    },
+    {
+      "titulo": "Marinha Mercante",
+      "link": "/dashboard/comex/mercante",
+      "thumb": "/assets/img/categories/comex.webp",
+      "descricao": "Conheça o sistema da Marinha Mercante, site onde conseguimos <span class=\"detalhe-palavra\">extrair documentos maríitimos importantes</span> para o registro da DI para embarques maritimos"
+    }
+  ],
+  "controlesList": [
+    {
+      "titulo": "Controle de Processos",
+      "link": "/dashboard/controles/processos",
+      "thumb": "/assets/img/categories/controles.webp",
+      "descricao": "Conheça o nossos <span class=\"detalhe-palavra\">controle de processos</span> onde mantemos a gestão de dados dos embarques da NFT Logistics."
+    },
+    {
+      "titulo": "Shipping Instructions",
+      "link": "/dashboard/controles/shipping-instructions",
+      "thumb": "/assets/img/categories/controles.webp",
+      "descricao": "A Shipping Instruction é um documento importante para facilitar o envio de <span class=\"detalhe-palavra\"> instruções de embarque</span> para nossos clientes enviarem a carga de forma correta para o Brasil."
+    }
+  ],
+  "notaList": [
+    {
+      "titulo": "CFOP",
+      "link": "/dashboard/nota-fiscal/cfop",
+      "thumb": "/assets/img/categories/nota-fiscal.webp",
+      "descricao": "Entenda para que serve o <span class=\"detalhe-palavra\">CFOP - Código Fiscal de Operações e de Prestações</span>."
+    },
+    {
+      "titulo": "Emissor Gratuito de Nota Fiscal",
+      "link": "/dashboard/nota-fiscal/emissor",
+      "thumb": "/assets/img/categories/nota-fiscal.webp",
+      "descricao": "Conheça o programa de transmissão de dados com a Receita Federal<span class=\"detalhe-palavra\"> Emissor Gratuito do Sebrae</span>."
+    },
+    {
+      "titulo": "Planilha Geradora de XML",
+      "link": "/dashboard/nota-fiscal/planilha-xml",
+      "thumb": "/assets/img/categories/nota-fiscal.webp",
+      "descricao": "Acesse e entenda como funciona a <span class=\"detalhe-palavra\">Planilha para detalhamento de impostos e que gera o XML para a Nota Fiscal</span> no emissor gratuito do sebrae versão 4.0"
+    }
+  ],
+  "nota-fiscalList": [
+    {
+      "titulo": "CFOP",
+      "link": "/dashboard/nota-fiscal/cfop",
+      "thumb": "/assets/img/categories/nota-fiscal.webp",
+      "descricao": "Entenda para que serve o <span class=\"detalhe-palavra\">CFOP - Código Fiscal de Operações e de Prestações</span>."
+    },
+    {
+      "titulo": "Emissor Gratuito de Nota Fiscal",
+      "link": "/dashboard/nota-fiscal/emissor",
+      "thumb": "/assets/img/categories/nota-fiscal.webp",
+      "descricao": "Conheça o programa de transmissão de dados com a Receita Federal<span class=\"detalhe-palavra\"> Emissor Gratuito do Sebrae</span>."
+    },
+    {
+      "titulo": "Planilha Geradora de XML",
+      "link": "/dashboard/nota-fiscal/planilha-xml",
+      "thumb": "/assets/img/categories/nota-fiscal.webp",
+      "descricao": "Acesse e entenda como funciona a <span class=\"detalhe-palavra\">Planilha para detalhamento de impostos e que gera o XML para a Nota Fiscal</span> no emissor gratuito do sebrae versão 4.0"
+    }
+  ],
+  "procedimentosList": [
+    {
+      "titulo": "Abertura de Referencia Interna",
+      "link": "/dashboard/procedimentos/referencia-interna",
+      "thumb": "/assets/img/categories/procedimentos.webp",
+      "descricao": "Aprenda a abrir uma <span class=\"detalhe-palavra\">referencia interna</span> da NFT Logistics e como manter esse controle atualizado"
+    },
+    {
+      "titulo": "ATI Multilog",
+      "link": "/dashboard/procedimentos/ati-multilog",
+      "thumb": "/assets/img/categories/procedimentos.webp",
+      "descricao": "A ATI é o procedimento de <span class=\"detalhe-palavra\">solicitação de remoção da zona primária para a zona secundária</span> que usamos para ter maiores controles sobre armazenágem e desembaraço de carga importada."
+    },
+    {
+      "titulo": "Coleta Transportadora",
+      "link": "/dashboard/procedimentos/coleta-transportadora",
+      "thumb": "/assets/img/categories/procedimentos.webp",
+      "descricao": "Saiba como solicitar a <span class=\"detalhe-palavra\">coleta de carga no armazém</span> e outros tipos de movimentação de carga."
+    },
+    {
+      "titulo": "Abertura de Referencia Despachante",
+      "link": "/dashboard/procedimentos/referencia-despachante",
+      "thumb": "/assets/img/categories/procedimentos.webp",
+      "descricao": "Saiba como solicitar a <span class=\"detalhe-palavra\">Abertura de referencia com nosso despachante</span>"
+    },
+    {
+      "titulo": "Planilha de Tradução MFM",
+      "link": "/dashboard/procedimentos/traducao",
+      "thumb": "/assets/img/categories/procedimentos.webp",
+      "descricao": "Conheça <span class=\"detalhe-palavra\">extrair documentos importantes</span>"
+    },
+    {
+      "titulo": "EPI - Equipamentos de Proteção",
+      "link": "/dashboard/procedimentos/epi",
+      "thumb": "/assets/img/categories/procedimentos.webp",
+      "descricao": "Conheça <span class=\"detalhe-palavra\">extrair documentos importantes</span>"
+    }
+  ],
+  "produtividadeList": [
+    {
+      "titulo": "Códigos para Automatização",
+      "link": "/dashboard/produtividade/codigos-programacao",
+      "thumb": "/assets/img/categories/produtividade.webp",
+      "descricao": "Conheça <span class=\"detalhe-palavra\">extrair documentos importantes</span>"
+    },
+    {
+      "titulo": "Dicas de Excel",
+      "link": "/dashboard/produtividade/excel",
+      "thumb": "/assets/img/categories/produtividade.webp",
+      "descricao": "Conheça <span class=\"detalhe-palavra\">extrair documentos importantes</span>"
+    }
+  ],
+  "tabelasList": [
+    {
+      "titulo": "Lista de Contatos",
+      "link": "/dashboard/tabelas/lista-contatos",
+      "thumb": "/assets/img/categories/tabelas.webp",
+      "descricao": "Conheça <span class=\"detalhe-palavra\">extrair documentos importantes</span>"
+    },
+    {
+      "titulo": "Lista de Expositores",
+      "link": "/dashboard/tabelas/lista-expositores",
+      "thumb": "/assets/img/categories/tabelas.webp",
+      "descricao": "Conheça <span class=\"detalhe-palavra\">extrair documentos importantes</span>"
+    },
+    {
+      "titulo": "Lista de Feiras",
+      "link": "/dashboard/tabelas/lista-feiras",
+      "thumb": "/assets/img/categories/tabelas.webp",
+      "descricao": "Conheça <span class=\"detalhe-palavra\">extrair documentos importantes</span>"
+    }
+  ],
+  "linksList": [
+    {
+      "titulo": "Controle de Processos",
+      "link": "https://docs.google.com/spreadsheets/d/1AdyWmSlqCaVaPJ0khW2siap-kVzNxu-n8kdyZu5u7SU/",
+      "icon": "FileSpreadsheet"
+    },
+    {
+      "titulo": "Shipping Instructions",
+      "link": "https://docs.google.com/spreadsheets/d/1SmcXzTR6JgtUghmTnnsb4R60YviUd97ubPx2U9S9DCM/",
+      "icon": "FileSpreadsheet"
+    },
+    {
+      "titulo": "Condições Tarifarias",
+      "link": "https://docs.google.com/spreadsheets/d/1s4AkHDImm_9_K_ZmxqoOR8XW8Z_PDnGNYX8-GnKbTR4/",
+      "icon": "FileSpreadsheet"
+    },
+    {
+      "titulo": "Criação de NF 3.0",
+      "link": "https://docs.google.com/spreadsheets/d/15XUuIXBEIPooHuejX-UIDM1A8ce32rvr8hKXch6rIFU/",
+      "icon": "FileSpreadsheet"
+    },
+    {
+      "titulo": "Criação de E-mail Transporte",
+      "link": "https://docs.google.com/spreadsheets/d/1SiqiMWd6oiFbe6trus6tzDG1C87yJyT7X2BU12V22x4/",
+      "icon": "FileSpreadsheet"
+    },
+    {
+      "titulo": "Fluxo de Trabalho - ADM",
+      "link": "https://docs.google.com/drawings/d/1RHly08ko7_6ZIVB0NGY1-yfoUkbIeVy5Yw8DkYbp8po/edit",
+      "icon": "Workflow"
+    },
+    {
+      "titulo": "Fluxo de Trabalho - Feira",
+      "link": "https://docs.google.com/drawings/d/1RHly08ko7_6ZIVB0NGY1-yfoUkbIeVy5Yw8DkYbp8po/edit",
+      "icon": "Workflow"
+    }
+  ]
+}
