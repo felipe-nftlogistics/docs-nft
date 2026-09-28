@@ -1,12 +1,18 @@
 import menus from "@/data/menus.json";
 import docContent from "@/data/docContent.json";
 import { notFound } from "next/navigation";
-import { FileText, ArrowLeft } from "lucide-react";
+import { ArrowLeft, AlertCircle } from "lucide-react";
 import Link from "next/link";
 import { DocViewer } from "@/components/DocViewer";
+import { DocPageHeader } from "@/components/DocPageHeader";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 
 export default async function ItemPage({ params }: { params: Promise<{ categoria: string, slug: string }> }) {
   const resolvedParams = await params;
+  const session = await getServerSession(authOptions);
+  const isAdmin = !!(session?.user as any)?.isAdmin;
+
   const categoryKey = `${resolvedParams.categoria}List` as keyof typeof menus;
   const categoryData = menus[categoryKey];
 
@@ -22,12 +28,35 @@ export default async function ItemPage({ params }: { params: Promise<{ categoria
   }
 
   const docKey = `${resolvedParams.categoria}/${resolvedParams.slug}`;
-  const doc = (docContent as Record<string, { title: string; html: string }>)[docKey];
+  const doc = (docContent as Record<string, { title: string; html: string; ativo?: boolean }>)[docKey];
+  const isItemAtivo = (itemData as any).ativo !== false && (doc?.ativo !== false);
 
   const categoryInfo = menus.menuCategoriaList.find(c => c.link === `/dashboard/${resolvedParams.categoria}`);
 
+  // Se o item estiver inativo e o usuário não for administrador
+  if (!isItemAtivo && !isAdmin) {
+    return (
+      <div className="flex flex-col items-center justify-center py-16 px-4 text-center max-w-lg mx-auto">
+        <div className="w-16 h-16 rounded-2xl bg-amber-500/10 text-amber-500 flex items-center justify-center mb-4">
+          <AlertCircle className="w-8 h-8" />
+        </div>
+        <h1 className="text-2xl font-bold text-heading">Conteúdo Desativado</h1>
+        <p className="text-muted-foreground text-sm mt-2">
+          Esta página está temporariamente desativada ou em processo de atualização pela equipe.
+        </p>
+        <Link
+          href={`/dashboard/${resolvedParams.categoria}`}
+          className="mt-6 inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-primary text-white text-sm font-medium hover:opacity-90 transition-opacity"
+        >
+          <ArrowLeft className="w-4 h-4" />
+          Voltar para {categoryInfo?.titulo || resolvedParams.categoria}
+        </Link>
+      </div>
+    );
+  }
+
   return (
-    <div className="flex flex-col gap-6 max-w-4xl mx-auto">
+    <div className="flex flex-col gap-6 max-w-6xl mx-auto">
       <div className="flex items-center gap-2">
         <Link 
           href={`/dashboard/${resolvedParams.categoria}`} 
@@ -38,18 +67,24 @@ export default async function ItemPage({ params }: { params: Promise<{ categoria
         </Link>
       </div>
 
-      <div className="bg-muted border border-border p-6 md:p-8 rounded-2xl shadow-xs">
-        <div className="flex items-start sm:items-center gap-4 border-b border-border pb-6">
-          <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
-            <FileText className="w-6 h-6 text-primary" />
-          </div>
-          <div>
-            <h1 className="text-2xl font-bold text-heading">{itemData.titulo}</h1>
-            {(itemData as any).descricao && (
-              <p className="text-muted-foreground mt-1 text-sm" dangerouslySetInnerHTML={{__html: (itemData as any).descricao}}></p>
-            )}
-          </div>
+      {!isItemAtivo && isAdmin && (
+        <div className="bg-amber-500/10 border border-amber-500/30 text-amber-700 dark:text-amber-400 px-4 py-3 rounded-2xl text-xs sm:text-sm flex items-center gap-2.5">
+          <AlertCircle className="w-4 h-4 shrink-0" />
+          <span>
+            <strong>Aviso de Administrador:</strong> Esta página está marcada como <strong>INATIVA</strong>. Ela está invisível para os usuários comuns.
+          </span>
         </div>
+      )}
+
+      <div className="bg-muted border border-border p-6 md:p-8 rounded-2xl shadow-xs">
+        <DocPageHeader
+          docKey={docKey}
+          title={itemData.titulo}
+          description={(itemData as any).descricao}
+          initialContent={doc?.html || ""}
+          ativo={isItemAtivo}
+          isAdmin={isAdmin}
+        />
         
         {doc?.html ? (
           <DocViewer html={doc.html} />

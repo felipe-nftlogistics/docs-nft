@@ -16,6 +16,8 @@ import {
   Zap, 
   Table, 
   Users,
+  FileEdit,
+  ImageIcon,
   PanelLeftClose,
   PanelLeftOpen
 } from "lucide-react";
@@ -56,7 +58,8 @@ export function Sidebar() {
 
   const isExpanded = isPinned || isHovered;
 
-  const isLinkActive = (path: string) => {
+  const isLinkActive = (path: string, exact: boolean = false) => {
+    if (exact) return pathname === path;
     return pathname === path || pathname.startsWith(path + "/");
   };
 
@@ -107,9 +110,13 @@ export function Sidebar() {
           {menus.menuCategoriaList.map((item) => {
             const isActive = isLinkActive(item.link) && item.link !== "/dashboard" || (item.link === "/dashboard" && pathname === "/dashboard");
             const isCategoryActive = isLinkActive(item.link) && item.link !== "/dashboard";
+            const isAdmin = !!(session?.user as any)?.isAdmin;
             const categorySlug = item.link.split("/").pop();
             const subItemsKey = `${categorySlug}List` as keyof typeof menus;
-            const subItems = (menus[subItemsKey] || (menus as any)["notaList"]) as any[];
+            const rawSubItems = (menus[subItemsKey] || (menus as any)["notaList"]) as any[];
+            const subItems = Array.isArray(rawSubItems)
+              ? rawSubItems.filter((sub) => isAdmin || sub.ativo !== false)
+              : [];
             const IconComponent = categoryIcons[item.link] || FolderKanban;
 
             return (
@@ -142,19 +149,24 @@ export function Sidebar() {
                 </Link>
                 
                 {/* Subitens da Categoria */}
-                {isExpanded && isCategoryActive && Array.isArray(subItems) && (
+                {isExpanded && isCategoryActive && subItems.length > 0 && (
                   <div className="flex flex-col ml-5 mt-1 border-l-2 border-border pl-2 gap-1 animate-in fade-in duration-200">
                     {subItems.map((sub) => (
                       <Link
                         key={sub.link}
                         href={sub.link}
-                        className={`px-3 py-1.5 rounded-md text-xs transition-colors truncate ${
+                        className={`px-3 py-1.5 rounded-md text-xs transition-colors truncate flex items-center justify-between gap-1.5 ${
                           pathname === sub.link
                             ? "text-primary font-medium bg-primary/5"
                             : "text-muted-foreground hover:text-foreground hover:bg-black/5 dark:hover:bg-white/5"
                         }`}
                       >
-                        {sub.titulo}
+                        <span className="truncate">{sub.titulo}</span>
+                        {sub.ativo === false && (
+                          <span className="text-[10px] text-amber-500 font-medium shrink-0">
+                            (inativo)
+                          </span>
+                        )}
                       </Link>
                     ))}
                   </div>
@@ -171,7 +183,49 @@ export function Sidebar() {
                   Administração
                 </p>
               )}
-              <div className="mt-1">
+              <div className="mt-1 flex flex-col gap-1">
+                <Link
+                  href="/dashboard/admin/cms"
+                  title={!isExpanded ? "Gerenciar Páginas / CMS" : undefined}
+                  className={`flex items-center rounded-xl text-sm transition-colors ${
+                    isExpanded 
+                      ? "gap-3 px-3.5 py-2.5" 
+                      : "justify-center p-2.5"
+                  } ${
+                    isLinkActive("/dashboard/admin/cms", true)
+                      ? "bg-primary/10 text-primary font-medium"
+                      : "text-foreground hover:bg-black/5 dark:hover:bg-white/5"
+                  }`}
+                >
+                  <FileEdit className={`w-5 h-5 shrink-0 ${isLinkActive("/dashboard/admin/cms", true) ? "text-primary" : "text-muted-foreground"}`} />
+                  {isExpanded && (
+                    <span className="truncate animate-in fade-in duration-200">
+                       CMS / Páginas
+                    </span>
+                  )}
+                </Link>
+
+                <Link
+                  href="/dashboard/admin/galeria"
+                  title={!isExpanded ? "Galeria de Imagens & Mídia" : undefined}
+                  className={`flex items-center rounded-xl text-sm transition-colors ${
+                    isExpanded 
+                      ? "gap-3 px-3.5 py-2.5" 
+                      : "justify-center p-2.5"
+                  } ${
+                    isLinkActive("/dashboard/admin/galeria", true)
+                      ? "bg-primary/10 text-primary font-medium"
+                      : "text-foreground hover:bg-black/5 dark:hover:bg-white/5"
+                  }`}
+                >
+                  <ImageIcon className={`w-5 h-5 shrink-0 ${isLinkActive("/dashboard/admin/galeria", true) ? "text-primary" : "text-muted-foreground"}`} />
+                  {isExpanded && (
+                    <span className="truncate animate-in fade-in duration-200">
+                      Galeria de Imagens
+                    </span>
+                  )}
+                </Link>
+
                 <Link
                   href="/dashboard/admin"
                   title={!isExpanded ? "Gerenciar Usuários" : undefined}
@@ -180,12 +234,12 @@ export function Sidebar() {
                       ? "gap-3 px-3.5 py-2.5" 
                       : "justify-center p-2.5"
                   } ${
-                    isLinkActive("/dashboard/admin")
+                    isLinkActive("/dashboard/admin", true)
                       ? "bg-primary/10 text-primary font-medium"
                       : "text-foreground hover:bg-black/5 dark:hover:bg-white/5"
                   }`}
                 >
-                  <Users className={`w-5 h-5 shrink-0 ${isLinkActive("/dashboard/admin") ? "text-primary" : "text-muted-foreground"}`} />
+                  <Users className={`w-5 h-5 shrink-0 ${isLinkActive("/dashboard/admin", true) ? "text-primary" : "text-muted-foreground"}`} />
                   {isExpanded && (
                     <span className="truncate animate-in fade-in duration-200">
                       Usuários

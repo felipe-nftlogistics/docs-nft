@@ -41,6 +41,12 @@
       "link": "/dashboard/tabelas",
       "thumb": "/assets/img/categories/tabelas.webp",
       "descricao": "Tenha acesso a <span class=\"detalhe-palavra\">listas e tabelas</span> importantes para o bom andamento do seu dia a dia na NFT Logistics"
+    },
+    {
+      "titulo": "Negociacao",
+      "link": "/dashboard/negociacao",
+      "thumb": "/assets/img/categories/comex.webp",
+      "descricao": "Teste de uma nova categoria"
     }
   ],
   "comexList": [
@@ -48,19 +54,22 @@
       "titulo": "CCT - Antigo Mantra",
       "link": "/dashboard/comex/cct",
       "thumb": "/assets/img/categories/comex.webp",
-      "descricao": "Conheça o <span class=\"detalhe-palavra\">Conhecimento de embarque aéreo</span> (antigo Mantra), utilizado para saber o que foi registrado na carga no sistema da Receita Federal."
+      "descricao": "Conheça o <span class=\"detalhe-palavra\">Conhecimento de embarque aéreo</span> (antigo Mantra), utilizado para saber o que foi registrado na carga no sistema da Receita Federal.",
+      "ativo": true
     },
     {
       "titulo": "Desbloqueio de BL",
       "link": "/dashboard/comex/desbloqueio-bl",
       "thumb": "/assets/img/categories/comex.webp",
-      "descricao": "Como fazer o <span class=\"detalhe-palavra\">desbloqueio do conhecimento maritimo</span> para conseguir fazer remoção e registro de DI."
+      "descricao": "Como fazer o <span class=\"detalhe-palavra\">desbloqueio do conhecimento maritimo</span> para conseguir fazer remoção e registro de DI.",
+      "ativo": true
     },
     {
       "titulo": "DTA - Remoção",
       "link": "/dashboard/comex/dta-remocao",
       "thumb": "/assets/img/categories/comex.webp",
-      "descricao": "Declaração de transito Aduaneiro, entenda como funciona o procedimento de <span class=\"detalhe-palavra\">remoção da Zona Primaria</span> para a Secundária"
+      "descricao": "Declaração de transito Aduaneiro, entenda como funciona o procedimento de <span class=\"detalhe-palavra\">remoção da Zona Primaria</span> para a Secundária",
+      "ativo": true
     },
     {
       "titulo": "Importação",
@@ -248,6 +257,15 @@
       "titulo": "Fluxo de Trabalho - Feira",
       "link": "https://docs.google.com/drawings/d/1RHly08ko7_6ZIVB0NGY1-yfoUkbIeVy5Yw8DkYbp8po/edit",
       "icon": "Workflow"
+    }
+  ],
+  "negociacaoList": [
+    {
+      "titulo": "Teste de Negociação",
+      "link": "/dashboard/negociacao/teste-de-negociacao",
+      "thumb": "/assets/img/categories/negociacao.webp",
+      "descricao": "Conteúdo órfão preservado (antigo módulo: negociacao)",
+      "ativo": true
     }
   ]
 }
