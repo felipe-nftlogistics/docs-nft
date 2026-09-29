@@ -1,31 +1,43 @@
-import menus from "@/data/menus.json";
 import Link from "next/link";
 import Image from "next/image";
 import { notFound } from "next/navigation";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+import { prisma } from "@/lib/prisma";
 
 export default async function CategoryPage({ params }: { params: Promise<{ categoria: string }> }) {
   const resolvedParams = await params;
   const session = await getServerSession(authOptions);
   const isAdmin = !!(session?.user as any)?.isAdmin;
 
-  const categoryKey = `${resolvedParams.categoria}List` as keyof typeof menus;
-  const categoryData = menus[categoryKey];
+  const categoria = await prisma.categoria.findUnique({
+    where: { slug: resolvedParams.categoria },
+    include: {
+      documentos: {
+        orderBy: { id: "asc" }
+      }
+    }
+  });
 
-  if (!categoryData || !Array.isArray(categoryData)) {
+  if (!categoria) {
     notFound();
   }
 
-  const categoryInfo = menus.menuCategoriaList.find(c => c.link === `/dashboard/${resolvedParams.categoria}`);
-  const visibleItems = categoryData.filter((item: any) => isAdmin || item.ativo !== false);
+  const categoryInfo = categoria;
+  const visibleItems = categoria.documentos.filter((item) => isAdmin || item.ativo !== false).map(doc => ({
+    link: `/dashboard/${categoria.slug}/${doc.slug}`,
+    thumb: doc.thumb || categoria.thumb,
+    titulo: doc.titulo,
+    descricao: doc.descricao || "",
+    ativo: doc.ativo
+  }));
 
   return (
     <div className="flex flex-col gap-8 max-w-6xl mx-auto">
       <div>
         <h1 className="text-3xl font-bold text-heading">{categoryInfo?.titulo || resolvedParams.categoria}</h1>
         {categoryInfo && (
-          <p className="text-muted-foreground mt-2" dangerouslySetInnerHTML={{__html: categoryInfo.descricao}}></p>
+          <p className="text-muted-foreground mt-2" dangerouslySetInnerHTML={{__html: categoryInfo.descricao || ""}}></p>
         )}
       </div>
 
@@ -50,6 +62,7 @@ export default async function CategoryPage({ params }: { params: Promise<{ categ
                 src={item.thumb} 
                 alt={item.titulo} 
                 fill 
+                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                 className="object-cover group-hover:scale-105 transition-transform duration-500"
               />
             </div>

@@ -24,7 +24,11 @@ export function LoginForm() {
     });
 
     if (res?.error) {
-      setError("Credenciais inválidas. Tente novamente.");
+      if (res.error === "Muitas tentativas falhas. Tente novamente mais tarde.") {
+        setError(res.error);
+      } else {
+        setError("Credenciais inválidas. Tente novamente.");
+      }
       setLoading(false);
     } else {
       router.push("/dashboard");

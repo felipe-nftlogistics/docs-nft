@@ -1,5 +1,3 @@
-import menus from "@/data/menus.json";
-import docContent from "@/data/docContent.json";
 import { notFound } from "next/navigation";
 import { ArrowLeft, AlertCircle } from "lucide-react";
 import Link from "next/link";
@@ -7,31 +5,35 @@ import { DocViewer } from "@/components/DocViewer";
 import { DocPageHeader } from "@/components/DocPageHeader";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+import { prisma } from "@/lib/prisma";
 
 export default async function ItemPage({ params }: { params: Promise<{ categoria: string, slug: string }> }) {
   const resolvedParams = await params;
   const session = await getServerSession(authOptions);
   const isAdmin = !!(session?.user as any)?.isAdmin;
 
-  const categoryKey = `${resolvedParams.categoria}List` as keyof typeof menus;
-  const categoryData = menus[categoryKey];
+  const categoria = await prisma.categoria.findUnique({
+    where: { slug: resolvedParams.categoria },
+    include: {
+      documentos: {
+        where: { slug: resolvedParams.slug }
+      }
+    }
+  });
 
-  if (!categoryData || !Array.isArray(categoryData)) {
+  if (!categoria || categoria.documentos.length === 0) {
     notFound();
   }
 
-  const expectedPath = `/dashboard/${resolvedParams.categoria}/${resolvedParams.slug}`;
-  const itemData = categoryData.find((item: any) => item.link === expectedPath);
-
-  if (!itemData) {
-    notFound();
-  }
+  const doc = categoria.documentos[0];
+  const itemData = {
+    titulo: doc.titulo,
+    descricao: doc.descricao
+  };
 
   const docKey = `${resolvedParams.categoria}/${resolvedParams.slug}`;
-  const doc = (docContent as Record<string, { title: string; html: string; ativo?: boolean }>)[docKey];
-  const isItemAtivo = (itemData as any).ativo !== false && (doc?.ativo !== false);
-
-  const categoryInfo = menus.menuCategoriaList.find(c => c.link === `/dashboard/${resolvedParams.categoria}`);
+  const isItemAtivo = doc.ativo;
+  const categoryInfo = categoria;
 
   // Se o item estiver inativo e o usuário não for administrador
   if (!isItemAtivo && !isAdmin) {

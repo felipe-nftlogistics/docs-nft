@@ -1,39 +1,67 @@
 import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "../auth/[...nextauth]/route";
-import fs from "fs";
-import path from "path";
+import { prisma } from "@/lib/prisma";
 
-const menusPath = path.join(process.cwd(), "src", "data", "menus.json");
-
-function getMenus() {
-  if (!fs.existsSync(menusPath)) return {};
-  const data = fs.readFileSync(menusPath, "utf8");
-  return JSON.parse(data);
-}
-
-function saveMenus(data: any) {
-  fs.writeFileSync(menusPath, JSON.stringify(data, null, 2), "utf8");
-}
-
-// GET /api/categories -> Retorna todas as categorias ativas
+// GET /api/categories -> Retorna todas as categorias ativas e menus (para o Sidebar)
 export async function GET() {
-  const menus = getMenus();
-  const list = (menus.menuCategoriaList || [])
-    .filter((cat: any) => cat.link !== "/dashboard")
-    .map((cat: any) => {
-      const slug = cat.link.replace("/dashboard/", "");
-      const listKey = slug === "nota-fiscal" ? "nota-fiscalList" : `${slug}List`;
-      return {
-        slug,
-        name: cat.titulo,
-        listKey,
-        thumb: cat.thumb,
-        descricao: cat.descricao || "",
-      };
+  try {
+    const categorias = await prisma.categoria.findMany({
+      include: {
+        documentos: {
+          select: {
+            titulo: true,
+            slug: true,
+            thumb: true,
+            descricao: true,
+            ativo: true,
+          },
+          orderBy: { id: "asc" }
+        }
+      },
+      orderBy: { id: "asc" }
     });
 
-  return NextResponse.json(list);
+    // Formatar no mesmo formato que o frontend espera (menuCategoriaList, e [slug]List)
+    const menuCategoriaList = categorias.map((cat) => ({
+      titulo: cat.titulo,
+      link: `/dashboard/${cat.slug}`,
+      thumb: cat.thumb || "/assets/img/categories/comex.webp",
+      descricao: cat.descricao || ""
+    }));
+
+    // Inserir Início no começo
+    menuCategoriaList.unshift({
+      titulo: "Inicio",
+      link: "/dashboard",
+      thumb: "/assets/img/categories/comex.webp",
+      descricao: "Vamos nos apresentar primeiros?<br> Somos a <span class=\"detalhe-palavra\">NFT Logistics</span>..."
+    });
+
+    const responseFormat: any = {
+      menuCategoriaList
+    };
+
+    categorias.forEach(cat => {
+      const listKey = cat.slug === "nota-fiscal" ? "nota-fiscalList" : `${cat.slug}List`;
+      responseFormat[listKey] = cat.documentos.map(doc => ({
+        titulo: doc.titulo,
+        link: `/dashboard/${cat.slug}/${doc.slug}`,
+        thumb: doc.thumb,
+        descricao: doc.descricao,
+        ativo: doc.ativo
+      }));
+      // compatibilidade
+      if (cat.slug === "nota-fiscal") {
+        responseFormat["notaList"] = responseFormat[listKey];
+      }
+    });
+
+    return NextResponse.json(responseFormat);
+  } catch (e) {
+    console.error(e);
+    return NextResponse.json({ error: "Erro ao buscar categorias" }, { status: 500 });
+  }
 }
 
 // POST /api/categories -> Cria uma nova categoria
@@ -52,7 +80,6 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "O título da categoria é obrigatório." }, { status: 400 });
     }
 
-    // Normaliza slug ou gera a partir do título
     const baseSlug = (slug && slug.trim()) ? slug : titulo;
     const cleanSlug = baseSlug
       .toLowerCase()
@@ -62,60 +89,31 @@ export async function POST(req: Request) {
       .replace(/[\s_]+/g, "-")
       .replace(/[^\w\-]+/g, "");
 
-    if (!cleanSlug) {
-      return NextResponse.json({ error: "Slug inválido para a categoria." }, { status: 400 });
-    }
-
-    const categoryLink = `/dashboard/${cleanSlug}`;
-    const listKey = `${cleanSlug}List`;
-
-    const menus = getMenus();
-    if (!menus.menuCategoriaList) {
-      menus.menuCategoriaList = [];
-    }
-
-    // Verifica se já existe
-    const exists = menus.menuCategoriaList.some(
-      (cat: any) => cat.link === categoryLink || cat.titulo.toLowerCase() === titulo.trim().toLowerCase()
-    );
-
+    const exists = await prisma.categoria.findUnique({ where: { slug: cleanSlug }});
     if (exists) {
-      return NextResponse.json(
-        { error: "Já existe uma categoria com este nome ou slug." },
-        { status: 400 }
-      );
+       return NextResponse.json({ error: "Já existe uma categoria com este nome ou slug." }, { status: 400 });
     }
 
-    // Define thumbnail padrão
     const defaultThumb = thumb && thumb.trim() ? thumb.trim() : "/assets/img/categories/comex.webp";
 
-    const newCategoryItem = {
-      titulo: titulo.trim(),
-      link: categoryLink,
-      thumb: defaultThumb,
-      descricao: descricao?.trim() || `Documentações e procedimentos sobre ${titulo.trim()}.`
-    };
-
-    menus.menuCategoriaList.push(newCategoryItem);
-
-    // Inicializa a lista de páginas dessa categoria
-    if (!menus[listKey]) {
-      menus[listKey] = [];
-    }
-
-    saveMenus(menus);
-
-    const createdCategory = {
-      slug: cleanSlug,
-      name: newCategoryItem.titulo,
-      listKey,
-      thumb: newCategoryItem.thumb,
-      descricao: newCategoryItem.descricao,
-    };
+    const cat = await prisma.categoria.create({
+      data: {
+        titulo: titulo.trim(),
+        slug: cleanSlug,
+        descricao: descricao?.trim() || `Documentações e procedimentos sobre ${titulo.trim()}.`,
+        thumb: defaultThumb
+      }
+    });
 
     return NextResponse.json({
       success: true,
-      category: createdCategory,
+      category: {
+        slug: cat.slug,
+        name: cat.titulo,
+        listKey: `${cat.slug}List`,
+        thumb: cat.thumb,
+        descricao: cat.descricao,
+      },
     });
   } catch (error) {
     console.error("Erro ao criar categoria:", error);
@@ -135,51 +133,29 @@ export async function PUT(req: Request) {
     const body = await req.json();
     const { originalSlug, titulo, descricao, thumb } = body;
 
-    if (!originalSlug) {
-      return NextResponse.json({ error: "Slug original da categoria é obrigatório." }, { status: 400 });
-    }
+    const cat = await prisma.categoria.findUnique({ where: { slug: originalSlug } });
+    if (!cat) return NextResponse.json({ error: "Categoria não encontrada." }, { status: 404 });
 
-    if (!titulo || !titulo.trim()) {
-      return NextResponse.json({ error: "O título da categoria é obrigatório." }, { status: 400 });
-    }
-
-    const menus = getMenus();
-    const originalLink = `/dashboard/${originalSlug}`;
-
-    if (!menus.menuCategoriaList || !Array.isArray(menus.menuCategoriaList)) {
-      return NextResponse.json({ error: "Categorias não encontradas." }, { status: 404 });
-    }
-
-    const catIndex = menus.menuCategoriaList.findIndex((c: any) => c.link === originalLink);
-    if (catIndex === -1) {
-      return NextResponse.json({ error: "Categoria não encontrada." }, { status: 404 });
-    }
-
-    // Atualiza os dados da categoria
-    menus.menuCategoriaList[catIndex].titulo = titulo.trim();
-    if (descricao !== undefined) {
-      menus.menuCategoriaList[catIndex].descricao = descricao.trim();
-    }
-    if (thumb !== undefined && thumb.trim()) {
-      menus.menuCategoriaList[catIndex].thumb = thumb.trim();
-    }
-
-    saveMenus(menus);
-
-    const updatedCategory = {
-      slug: originalSlug,
-      name: menus.menuCategoriaList[catIndex].titulo,
-      listKey: originalSlug === "nota-fiscal" ? "nota-fiscalList" : `${originalSlug}List`,
-      thumb: menus.menuCategoriaList[catIndex].thumb,
-      descricao: menus.menuCategoriaList[catIndex].descricao,
-    };
+    const updated = await prisma.categoria.update({
+      where: { id: cat.id },
+      data: {
+        titulo: titulo ? titulo.trim() : cat.titulo,
+        descricao: descricao !== undefined ? descricao.trim() : cat.descricao,
+        thumb: thumb !== undefined ? thumb.trim() : cat.thumb
+      }
+    });
 
     return NextResponse.json({
       success: true,
-      category: updatedCategory,
+      category: {
+        slug: updated.slug,
+        name: updated.titulo,
+        listKey: `${updated.slug}List`,
+        thumb: updated.thumb,
+        descricao: updated.descricao,
+      },
     });
   } catch (error) {
-    console.error("Erro ao atualizar categoria:", error);
     return NextResponse.json({ error: "Erro interno ao atualizar categoria." }, { status: 500 });
   }
 }
@@ -196,41 +172,12 @@ export async function DELETE(req: Request) {
     const { searchParams } = new URL(req.url);
     const slug = searchParams.get("slug");
 
-    if (!slug) {
-      return NextResponse.json({ error: "Slug da categoria é obrigatório." }, { status: 400 });
-    }
+    if (!slug) return NextResponse.json({ error: "Slug obrigatório" }, { status: 400 });
 
-    const menus = getMenus();
-    const linkToRemove = `/dashboard/${slug}`;
-    const listKey = slug === "nota-fiscal" ? "nota-fiscalList" : `${slug}List`;
-
-    // Preserva as páginas associadas na lista de órfãos (semCategoriaList) para que possam ser reatribuídas
-    const categoryItems = (menus[listKey] || []).map((it: any) => ({
-      ...it,
-      originalCategory: slug,
-      originalLink: it.link,
-      link: it.link.replace(`/dashboard/${slug}/`, `/dashboard/sem-categoria/`),
-      categorySlug: "sem-categoria",
-      ativo: false, // Oculto para o usuário final
-    }));
-
-    if (categoryItems.length > 0) {
-      menus.semCategoriaList = [
-        ...(menus.semCategoriaList || []).filter((it: any) => it.originalCategory !== slug),
-        ...categoryItems,
-      ];
-    }
-
-    menus.menuCategoriaList = (menus.menuCategoriaList || []).filter((c: any) => c.link !== linkToRemove);
-    if (menus[listKey]) {
-      delete menus[listKey];
-    }
-
-    saveMenus(menus);
+    await prisma.categoria.delete({ where: { slug }});
 
     return NextResponse.json({ success: true, slug });
   } catch (error) {
-    console.error("Erro ao excluir categoria:", error);
     return NextResponse.json({ error: "Erro interno ao excluir categoria." }, { status: 500 });
   }
 }

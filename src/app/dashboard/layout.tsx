@@ -3,9 +3,12 @@ import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import { redirect } from "next/navigation";
 import { Navbar } from "@/components/Navbar";
 import { Sidebar } from "@/components/Sidebar";
-import { PrismaClient } from "@prisma/client";
+import { SidebarProvider } from "@/contexts/SidebarContext";
+import { AttentionCopyEnhancer } from "@/components/AttentionCopyEnhancer";
+import { prisma } from "@/lib/prisma";
+import { getMenusFromDB } from "@/utils/db-helpers";
 
-const prisma = new PrismaClient();
+
 
 export default async function DashboardLayout({
   children,
@@ -24,15 +27,20 @@ export default async function DashboardLayout({
     select: { id: true, name: true, email: true, isAdmin: true, image: true }
   });
 
+  const menus = await getMenusFromDB();
+
   return (
-    <div className="flex h-screen overflow-hidden bg-background">
-      <Sidebar />
-      <div className="flex flex-col flex-1 w-full">
-        <Navbar user={dbUser || session.user} />
-        <main className="flex-1 overflow-y-auto p-6 md:p-8">
-          {children}
-        </main>
+    <SidebarProvider>
+      <AttentionCopyEnhancer />
+      <div className="flex h-screen overflow-hidden bg-background">
+        <Sidebar menus={menus} />
+        <div className="flex flex-col flex-1 w-full min-w-0">
+          <Navbar user={dbUser || session.user} menus={menus} />
+          <main className="flex-1 overflow-y-auto p-4 sm:p-6 md:p-8">
+            {children}
+          </main>
+        </div>
       </div>
-    </div>
+    </SidebarProvider>
   );
 }

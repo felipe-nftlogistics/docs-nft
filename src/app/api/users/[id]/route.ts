@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { PrismaClient } from "@prisma/client";
+import { prisma } from "@/lib/prisma";
 import { getServerSession } from "next-auth";
 import { authOptions } from "../../auth/[...nextauth]/route";
 import bcrypt from "bcryptjs";
@@ -7,7 +7,7 @@ import fs from "fs";
 import path from "path";
 import sharp from "sharp";
 
-const prisma = new PrismaClient();
+
 
 export async function DELETE(req: Request, { params }: { params: Promise<{ id: string }> }) {
 // ...

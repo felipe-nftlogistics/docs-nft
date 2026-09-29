@@ -22,7 +22,7 @@ export function BrandLogo({
     : "/assets/img/brand/nft_logo_vetor_icone_white.svg";
 
   return (
-    <div className={`inline-flex items-center justify-center ${className}`}>
+    <div className={`inline-flex items-center justify-center shrink-0 ${className}`}>
       <Image
         src={blackSrc}
         alt="NFT Logistics Logo"

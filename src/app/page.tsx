@@ -2,8 +2,17 @@ import Link from "next/link";
 import { Sparkles, Verified } from "lucide-react";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { BrandLogo } from "@/components/BrandLogo";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+import { redirect } from "next/navigation";
 
-export default function Home() {
+export default async function Home() {
+  const session = await getServerSession(authOptions);
+
+  if (session) {
+    redirect("/dashboard");
+  }
+
   return (
     <main className="flex min-h-screen flex-col items-center justify-center p-6 bg-gradient-to-b from-background to-primary/10 relative">
       <div className="absolute top-8 left-8">

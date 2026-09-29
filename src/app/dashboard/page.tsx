@@ -1,9 +1,10 @@
-import menus from "@/data/menus.json";
 import Link from "next/link";
 import Image from "next/image";
 import { FileSpreadsheet, Workflow } from "lucide-react";
+import { getMenusFromDB } from "@/utils/db-helpers";
 
-export default function DashboardPage() {
+export default async function DashboardPage() {
+  const menus = await getMenusFromDB();
   const iconMap: Record<string, React.ReactNode> = {
     "FileSpreadsheet": <FileSpreadsheet className="w-5 h-5 text-primary" />,
     "Workflow": <Workflow className="w-5 h-5 text-primary" />,
@@ -17,19 +18,20 @@ export default function DashboardPage() {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {menus.menuCategoriaList.slice(1).map((cat) => (
+        {menus.menuCategoriaList.slice(1).map((cat: any) => (
           <Link key={cat.link} href={cat.link} className="flex flex-col bg-muted border border-border rounded-xl overflow-hidden hover:border-primary/50 transition-colors group">
             <div className="h-32 w-full relative bg-black/5">
               <Image 
                 src={cat.thumb} 
                 alt={cat.titulo} 
                 fill 
+                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                 className="object-cover group-hover:scale-105 transition-transform duration-500"
               />
             </div>
             <div className="p-4 flex-1 flex flex-col">
               <h3 className="font-semibold text-lg text-heading mb-2">{cat.titulo}</h3>
-              <p className="text-sm text-muted-foreground line-clamp-3" dangerouslySetInnerHTML={{__html: cat.descricao}}></p>
+              <p className="text-sm text-muted-foreground line-clamp-3" dangerouslySetInnerHTML={{__html: cat.descricao || ""}}></p>
             </div>
           </Link>
         ))}
@@ -38,7 +40,7 @@ export default function DashboardPage() {
       <div className="mt-8">
         <h2 className="text-xl font-bold text-heading mb-4">Links Importantes</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          {menus.linksList.map((link, idx) => (
+          {menus.linksList.map((link: any, idx: number) => (
             <Link key={idx} href={link.link} target="_blank" className="flex items-center gap-3 p-4 bg-muted border border-border rounded-xl hover:bg-black/5 dark:hover:bg-white/5 transition-colors">
               {iconMap[link.icon] || <FileSpreadsheet className="w-5 h-5 text-primary" />}
               <span className="text-sm font-medium">{link.titulo}</span>

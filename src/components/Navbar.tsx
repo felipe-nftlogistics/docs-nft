@@ -7,15 +7,21 @@ import {
   X, 
   FileSpreadsheet, 
   Workflow, 
-  ExternalLink 
+  ExternalLink,
+  LayoutGrid,
+  PanelLeftClose,
+  PanelLeftOpen
 } from "lucide-react";
 import { signOut } from "next-auth/react";
 import Image from "next/image";
 import Link from "next/link";
-import menus from "@/data/menus.json";
 import { ThemeToggle } from "./ThemeToggle";
+import { BrandLogo } from "./BrandLogo";
+import { useSidebar } from "@/contexts/SidebarContext";
 
-export function Navbar({ user }: { user: any }) {
+export function Navbar({ user, menus }: { user: any; menus?: any }) {
+  const { toggleMobile, toggleDesktop, isMobileOpen, isDesktopPinned } = useSidebar();
+  const isMenuExpanded = isMobileOpen || isDesktopPinned;
   const [isOpen, setIsOpen] = useState(false);
   const [dateInfo, setDateInfo] = useState({
     dayMonth: "",
@@ -74,20 +80,63 @@ export function Navbar({ user }: { user: any }) {
   };
 
   return (
-    <header className="h-16 border-b border-border bg-muted flex items-center justify-between px-6 shrink-0 relative z-30">
-      <div className="flex items-center gap-4">
-        {/* Placeholder / mobile sidebar toggle */}
-        <div className="text-sm font-semibold text-heading hidden sm:block">
-          Docs NFT Logistics
+    <header className="h-16 border-b border-border bg-muted flex items-center justify-between px-4 sm:px-6 shrink-0 relative z-30">
+      {/* Lado Esquerdo: Botão Menu + Logo no Mobile */}
+      <div className="flex items-center gap-2.5 sm:gap-3">
+        {/* Botão de Menu Lateral: No mobile é um Hamburger fixo; No desktop/tablet alterna PanelLeftClose / PanelLeftOpen */}
+        <button
+          type="button"
+          onClick={() => {
+            if (typeof window !== "undefined" && window.innerWidth < 768) {
+              toggleMobile();
+            } else {
+              toggleDesktop();
+            }
+          }}
+          className="p-2 -ml-1 rounded-xl text-foreground hover:bg-black/5 dark:hover:bg-white/5 transition-colors cursor-pointer flex items-center justify-center shrink-0"
+          title={isMenuExpanded ? "Recolher menu lateral" : "Expandir menu lateral"}
+          aria-label={isMenuExpanded ? "Recolher menu lateral" : "Expandir menu lateral"}
+        >
+          {/* No mobile: Hamburger clássico que não muda */}
+          <Menu className="w-6 h-6 text-foreground md:hidden" />
+
+          {/* No desktop e tablet: Alterna entre PanelLeftClose e PanelLeftOpen */}
+          <div className="hidden md:flex items-center justify-center">
+            {isDesktopPinned ? (
+              <PanelLeftClose className="w-6 h-6 text-foreground" />
+            ) : (
+              <PanelLeftOpen className="w-6 h-6 text-foreground" />
+            )}
+          </div>
+        </button>
+
+        {/* LOGO NFT LOGISTICS - No Mobile vem ao lado do botão Hamburger */}
+        <Link 
+          href="/dashboard" 
+          className="flex items-center md:hidden group shrink-0" 
+          title="NFT Logistics - Ir para o início"
+        >
+          <BrandLogo 
+            variant="logo" 
+            width={36} 
+            height={36} 
+          />
+        </Link>
+
+        {/* Título de contexto no Desktop */}
+        <div className="hidden md:flex items-center gap-2">
+          <span className="text-sm font-semibold text-heading">
+            Docs NFT Logistics
+          </span>
         </div>
       </div>
 
-      <div className="flex items-center gap-4" ref={menuRef}>
+      <div className="flex items-center gap-2.5 sm:gap-4" ref={menuRef}>
         {/* Perfil do Usuário no Topo */}
         <button 
           onClick={() => setIsOpen(!isOpen)}
-          className="flex items-center gap-2 hover:opacity-80 transition-opacity cursor-pointer text-left"
-          title="Abrir menu"
+          className="flex items-center gap-2 p-1 rounded-xl hover:bg-black/5 dark:hover:bg-white/5 transition-colors cursor-pointer text-left"
+          title="Minha Conta & Widgets"
         >
           {user?.image ? (
             <Image 
@@ -95,7 +144,7 @@ export function Navbar({ user }: { user: any }) {
               alt={user?.name || ""} 
               width={34} 
               height={34} 
-              className="rounded-full w-8 h-8 object-cover border border-border" 
+              className="rounded-full w-8 h-8 object-cover border border-border shrink-0" 
               unoptimized 
             />
           ) : (
@@ -104,11 +153,11 @@ export function Navbar({ user }: { user: any }) {
               alt="Default User" 
               width={34} 
               height={34} 
-              className="rounded-full w-8 h-8 object-cover border border-border" 
+              className="rounded-full w-8 h-8 object-cover border border-border shrink-0" 
             />
           )}
           <div className="hidden sm:flex flex-col">
-            <span className="text-sm font-medium text-foreground leading-tight">{user?.name}</span>
+            <span className="text-sm font-medium text-foreground leading-tight truncate max-w-[140px]">{user?.name}</span>
             <span className="text-xs text-muted-foreground">{user?.isAdmin ? "Admin" : "User"}</span>
           </div>
         </button>
@@ -116,18 +165,18 @@ export function Navbar({ user }: { user: any }) {
         {/* Botão Alternar Tema */}
         <ThemeToggle />
 
-        {/* Botão Hamburger Menu */}
+        {/* Botão Bento Widget / Ferramentas */}
         <button 
           onClick={() => setIsOpen(!isOpen)}
-          className={`p-2 rounded-xl border transition-colors ${
+          className={`p-2 rounded-xl border transition-colors cursor-pointer ${
             isOpen 
               ? "bg-primary/10 border-primary text-primary" 
               : "border-border text-foreground hover:bg-black/5 dark:hover:bg-white/5"
           }`}
-          title="Menu suspenso"
-          aria-label="Menu principal"
+          title="Ferramentas e Ações Rápidas"
+          aria-label="Ferramentas e Ações Rápidas"
         >
-          {isOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+          {isOpen ? <X className="w-5 h-5" /> : <LayoutGrid className="w-5 h-5" />}
         </button>
 
         {/* Menu Suspenso (Dropdown Bento Widget) */}
@@ -195,7 +244,7 @@ export function Navbar({ user }: { user: any }) {
                 Links Importantes
               </span>
               <div className="flex flex-col gap-1">
-                {menus.linksList.map((item, idx) => (
+                {(menus?.linksList || []).map((item: any, idx: number) => (
                   <Link
                     key={idx}
                     href={item.link}

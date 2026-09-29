@@ -17,3 +17,46 @@ model Usuario {
 
   @@map("usuarios")
 }
+
+model Categoria {
+  id          Int         @id @default(autoincrement())
+  titulo      String
+  slug        String      @unique
+  thumb       String?
+  descricao   String?
+  documentos  Documento[]
+
+  @@map("categorias")
+}
+
+model Documento {
+  id          Int       @id @default(autoincrement())
+  titulo      String
+  slug        String
+  thumb       String?
+  descricao   String?
+  html        String
+  ativo       Boolean   @default(true)
+  
+  categoriaId Int
+  categoria   Categoria @relation(fields: [categoriaId], references: [id], onDelete: Cascade)
+
+  @@unique([categoriaId, slug])
+  @@map("documentos")
+}
+
+model Imagem {
+  id        String   @id @default(cuid())
+  nome      String
+  url       String   @unique
+  folder    String   @default("uploads")
+  size      Int      @default(0)
+  width     Int?
+  height    Int?
+  categoria String   @default("Geral")
+  profiles  String   @default("[\"Administrador\", \"Usuário Padrão\"]")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("imagens")
+}

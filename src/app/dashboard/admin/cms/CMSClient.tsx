@@ -28,7 +28,10 @@ import {
   Folder,
   FolderArchive
 } from "lucide-react";
-import { DocEditorModal } from "@/components/DocEditorModal";
+import dynamic from "next/dynamic";
+const DocEditorModal = dynamic(() => import("@/components/DocEditorModal").then(mod => mod.DocEditorModal), {
+  ssr: false,
+});
 
 interface PageItem {
   key: string;

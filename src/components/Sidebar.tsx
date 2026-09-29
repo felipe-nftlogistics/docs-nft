@@ -1,10 +1,9 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useSession } from "next-auth/react";
-import menus from "@/data/menus.json";
 import { 
   ChevronRight, 
   Settings, 
@@ -15,13 +14,15 @@ import {
   FolderKanban, 
   Zap, 
   Table, 
-  Users,
-  FileEdit,
-  ImageIcon,
-  PanelLeftClose,
-  PanelLeftOpen
+  Users, 
+  FileEdit, 
+  ImageIcon, 
+  PanelLeftClose, 
+  PanelLeftOpen 
 } from "lucide-react";
 import { BrandLogo } from "./BrandLogo";
+import { MobileSidebar } from "./MobileSidebar";
+import { useSidebar } from "@/contexts/SidebarContext";
 
 const categoryIcons: Record<string, React.ComponentType<{ className?: string }>> = {
   "/dashboard": Home,
@@ -33,30 +34,46 @@ const categoryIcons: Record<string, React.ComponentType<{ className?: string }>>
   "/dashboard/tabelas": Table,
 };
 
-export function Sidebar() {
+export function Sidebar({ menus }: { menus: any }) {
   const pathname = usePathname();
   const { data: session } = useSession();
+  const { isDesktopPinned, setIsDesktopPinned } = useSidebar();
   
-  // Estado para fixar o menu aberto ou deixá-lo no modo recolhido
-  const [isPinned, setIsPinned] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
-  const [mounted, setMounted] = useState(false);
+  const suppressHoverRef = useRef(false);
 
-  useEffect(() => {
-    const saved = localStorage.getItem("sidebar_pinned");
-    if (saved === "true") {
-      setIsPinned(true);
+  const handleMouseEnter = () => {
+    // Em telas touch (tablet/mobile), não expande por hover para não travar aberto
+    if (typeof window !== "undefined" && ("ontouchstart" in window || navigator.maxTouchPoints > 0)) {
+      return;
     }
-    setMounted(true);
-  }, []);
-
-  const togglePin = () => {
-    const nextState = !isPinned;
-    setIsPinned(nextState);
-    localStorage.setItem("sidebar_pinned", nextState ? "true" : "false");
+    if (!suppressHoverRef.current) {
+      setIsHovered(true);
+    }
   };
 
-  const isExpanded = isPinned || isHovered;
+  const handleMouseLeave = () => {
+    suppressHoverRef.current = false;
+    setIsHovered(false);
+  };
+
+  const handleToggle = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (isExpanded) {
+      // Recolher imediatamente e suprimir hover
+      suppressHoverRef.current = true;
+      setIsHovered(false);
+      setIsDesktopPinned(false);
+      localStorage.setItem("sidebar_pinned", "false");
+    } else {
+      // Expandir e fixar
+      suppressHoverRef.current = false;
+      setIsDesktopPinned(true);
+      localStorage.setItem("sidebar_pinned", "true");
+    }
+  };
+
+  const isExpanded = isDesktopPinned || (isHovered && !suppressHoverRef.current);
 
   const isLinkActive = (path: string, exact: boolean = false) => {
     if (exact) return pathname === path;
@@ -64,42 +81,25 @@ export function Sidebar() {
   };
 
   return (
-    <aside 
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
+    <>
+      <aside 
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
       className={`${
         isExpanded ? "w-64" : "w-[72px]"
       } bg-muted border-r border-border hidden md:flex flex-col h-full shrink-0 transition-all duration-300 ease-in-out select-none relative z-20`}
     >
-      {/* Topo do Sidebar (Logo + Botão de Fixar) */}
+      {/* Topo do Sidebar (Logo + Botão de Fixar/Recolher) */}
       <div className={`h-16 flex items-center border-b border-border transition-all duration-300 ${
-        isExpanded ? "justify-between px-5" : "justify-center px-2"
+        isExpanded ? "justify-start px-5" : "justify-center px-3"
       }`}>
-        <Link href="/dashboard" className="flex items-center gap-2 overflow-hidden" title="Início">
+        <Link href="/dashboard" className="flex items-center gap-2 overflow-hidden shrink-0" title="Início">
           <BrandLogo 
             variant={isExpanded ? "logo" : "icon"} 
             width={isExpanded ? 36 : 30} 
             height={isExpanded ? 36 : 30} 
           />
         </Link>
-
-        {isExpanded && (
-          <button
-            onClick={togglePin}
-            className={`p-1.5 rounded-lg border transition-colors cursor-pointer ${
-              isPinned 
-                ? "bg-primary/10 border-primary text-primary" 
-                : "border-border text-muted-foreground hover:text-foreground hover:bg-black/5 dark:hover:bg-white/5"
-            }`}
-            title={isPinned ? "Desafixar menu (recolher)" : "Fixar menu aberto"}
-          >
-            {isPinned ? (
-              <PanelLeftClose className="w-4 h-4" />
-            ) : (
-              <PanelLeftOpen className="w-4 h-4" />
-            )}
-          </button>
-        )}
       </div>
 
       {/* Navegação */}
@@ -107,13 +107,15 @@ export function Sidebar() {
         <nav className="flex flex-col gap-1.5 px-2.5">
 
 
-          {menus.menuCategoriaList.map((item) => {
+          {menus.menuCategoriaList.map((item: any) => {
             const isActive = isLinkActive(item.link) && item.link !== "/dashboard" || (item.link === "/dashboard" && pathname === "/dashboard");
             const isCategoryActive = isLinkActive(item.link) && item.link !== "/dashboard";
             const isAdmin = !!(session?.user as any)?.isAdmin;
             const categorySlug = item.link.split("/").pop();
             const subItemsKey = `${categorySlug}List` as keyof typeof menus;
-            const rawSubItems = (menus[subItemsKey] || (menus as any)["notaList"]) as any[];
+            const rawSubItems = categorySlug === "nota-fiscal"
+              ? ((menus as any).notaList || (menus as any)["nota-fiscalList"] || [])
+              : (menus[subItemsKey] as any[]) || [];
             const subItems = Array.isArray(rawSubItems)
               ? rawSubItems.filter((sub) => isAdmin || sub.ativo !== false)
               : [];
@@ -252,5 +254,7 @@ export function Sidebar() {
         </nav>
       </div>
     </aside>
+    <MobileSidebar menus={menus} />
+    </>
   );
 }

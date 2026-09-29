@@ -1,8 +1,17 @@
 import { LoginForm } from "./LoginForm";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { BrandLogo } from "@/components/BrandLogo";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+import { redirect } from "next/navigation";
 
-export default function LoginPage() {
+export default async function LoginPage() {
+  const session = await getServerSession(authOptions);
+
+  if (session) {
+    redirect("/dashboard");
+  }
+
   return (
     <main className="flex min-h-screen items-center justify-center bg-background p-4 relative">
       <div className="absolute top-6 right-6">

@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef } from "react";
 import { ZoomIn, ZoomOut, RotateCcw, X } from "lucide-react";
+import { initAttentionCopy } from "./AttentionCopyEnhancer";
 
 interface DocViewerProps {
   html: string;
@@ -32,6 +33,8 @@ export function DocViewer({ html }: DocViewerProps) {
         setPosition({ x: 0, y: 0 });
       }
     }
+
+    initAttentionCopy(container);
 
     container.addEventListener("click", handleImageClick);
     return () => {
